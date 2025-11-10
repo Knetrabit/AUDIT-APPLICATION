@@ -1,0 +1,32 @@
+﻿@model List<FloatDetail>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-sm table-bordered table-striped mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>User Name</th>
+                <th>Seal Number</th>
+                <th>Float Date Time</th>
+                <th>User Id</th>
+                <th>Bag Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.UserName</td>
+                    <td>@item.SealNumber</td>
+                    <td>@item.FloatDateTime.ToString("dd-MM-yyyy HH:mm:ss")</td>
+                    <td>@item.UserId</td>
+                    <td>@item.BagNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning mt-2">No float details found.</div>
+}

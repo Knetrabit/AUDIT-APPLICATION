@@ -1,0 +1,715 @@
+﻿@model List<NonFastTagTransaction>
+
+@{
+    ViewData["Title"] = "Non-FastTag Review";
+}
+<h5 class="mb-4" style="color:blue; text-align:center;">@ViewData["Title"]</h5>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Filter Section -->
+<div class="w-100 mb-2 shadow-sm bg-light border rounded filter-container p-3" style="background-color:lightgrey">
+    <form method="get" asp-controller="NonFastTag" asp-action="Index">
+        <!-- First Row: From & To DateTime -->
+        <div class="row gx-2 gy-1 align-items-end">
+            <div class="col-md-6">
+                <label for="fromDate" class="form-label">From Date & Time</label>
+                @* <input type="datetime-local" id="fromDate" name="fromDate" class="form-control"
+                       value="@DateTime.Today.AddDays(-1).AddSeconds(1).ToString("yyyy-MM-ddTHH:mm:ss")" required /> *@
+                <input type="datetime-local" id="fromDate" name="fromDate" class="form-control form-control-sm"
+                       value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-ddTHH:mm:ss")" required />
+            </div>
+
+            <div class="col-md-6">
+                <label for="toDate" class="form-label">To Date & Time</label>
+                <input type="datetime-local" id="toDate" name="toDate" class="form-control"
+                       value="@DateTime.Today.AddDays(1).AddSeconds(-1).ToString("yyyy-MM-ddTHH:mm:ss")" required />
+            </div>
+        </div>
+
+        <!-- Second Row: All Other Filters -->
+        <div class="row g-3 mt-2">
+            <div class="col-md-2">
+                <label for="lane" class="form-label">Lane</label>
+                <select id="lane" name="lane" class="form-select">
+                    <option value="0">- Select -</option>
+                    @for (int i = 1; i <= 8; i++)
+                    {
+                        <option value="@i">Lane @i</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="shiftType" class="form-label">Shift Type</label>
+                <select id="shiftType" name="shiftType" class="form-select">
+                    <option value="ALL">- Select --</option>
+                    <option value="A">- A -</option>
+                    <option value="B">- B -</option>
+                    <option value="C">- C -</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="category" class="form-label">Category</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="ALL">- Select -</option>
+                    <option value="ALL">- Not Available -</option>
+                </select>
+            </div>
+
+            @* <div class="col-md-2">
+                <label for="mop" class="form-label">Payment Method</label>
+                <select id="mop" name="mop" class="form-select">
+                    <option value="ALL">-- Select --</option>
+                    <option>Cash</option>
+                    <option>UPI</option>
+                    <option>Card</option>
+                </select>
+            </div> *@
+
+            <div class="col-md-2">
+                <label for="user" class="form-label">User ID</label>
+                <select id="user" name="user" class="form-select">
+                    <option value="ALL">- Select -</option>
+                    <option value="38000062">- 38000062 -</option>
+                    <option value="38000067">- 38000067 -</option>
+                    <option value="38000065">- 38000065 -</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="subCat" class="form-label">Sub Category</label>
+                <select id="subCat" name="subCat" class="form-select">
+                    <option value="ALL">- Select -</option>
+                    <option value="ALL">- Not Available -</option>
+                </select>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">View</button>
+            </div>
+
+            @* <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" formaction="/NonFastTag/DownloadPdf" class="btn btn-danger w-100">Download PDF</button>
+            </div> *@
+        </div>
+    </form>
+</div>
+
+
+
+<!-- ✅ Grid Section -->
+<div class="table-responsive shadow-sm mt-3" style="max-height: 540px; overflow-y: auto; margin-bottom: 20px;">
+    <table class="table table-bordered table-hover table-striped table-sm small">
+        <thead class="table-dark text-center sticky-top" style="top: 0; z-index: 10;">
+            <tr>
+                <th>Txn No.</th>
+                <th>Receipt No.</th>
+                <th>Date Time</th>
+                <th>Vehicle No</th>
+                <th>Lane ID</th>
+                <th>Amount</th>
+                <th>Exemption ID</th>
+                <th>Validator Class</th>
+                <th>Payment MeansType</th>
+                @* <th>Payment Mode</th> *@
+                <th>Shift No.</th>
+                <th>TC Class</th>
+                <th>AVC Class</th>
+                <th>IsUnder Weight</th>
+                <th>SWB Weight</th>
+                <th>SWB Amount</th>
+                <th>Simulation</th>
+                <th>Bag Number</th>
+                <th>UserId</th>
+                <th>Fare Id</th>
+                <th>View</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="text-center">
+                        <td>@item.TollTransactionNumber</td>
+                        <td>@item.ReceiptNumber</td>
+                        <td>@item.DateTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td>@item.PlateNumber</td>
+                        <td>@item.LaneID</td>
+                        <td>₹ @item.Amount</td>
+                        <td>@item.ExemptionID</td>
+                        <td>@item.ValidatorClass</td>
+                        <td>@item.PaymentMeansType</td>
+                        @* <td>@item.PaymentMode</td> *@
+                        <td>@item.ShiftNumber</td>
+                        <td>@item.TCClass</td>
+                        <td>@item.AVCClass</td>
+                        <td>@item.IsUnderWeight</td>
+                        <td>@item.SWBWeight</td>
+                        <td>₹ @item.SWBAmount</td>
+                        <td>@(item.Simulation ? true : false)</td>
+                        <td>@item.BagNumber</td>
+                        <td>@item.UserID</td>
+                        <td>@item.FareID</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-primary view-btn"
+                               data-txnno="@item.TollTransactionNumber"
+                               data-receiptnumber="@item.ReceiptNumber"
+                               data-datetime="@item.DateTime"
+                               data-vehicleno="@item.PlateNumber"
+                               data-laneid="@item.LaneID"
+                               data-amount="@item.Amount"
+                               data-exemptionid="@item.ExemptionID"
+                               data-validatorclass="@item.ValidatorClass"
+                               data-paymentmeantype="@item.PaymentMeansType"
+                               @* data-paymentmode="@item.PaymentMode" *@
+                               data-shiftnumber="@item.ShiftNumber"
+                               data-tcclass="@item.TCClass"
+                               data-avcclass="@item.AVCClass"
+                               data-isunderweight="@item.IsUnderWeight"
+                               data-swbweight="@item.SWBWeight"
+                               data-swbamount="@item.SWBAmount"
+                               data-simulation="@item.Simulation"
+                               data-bagnumber="@item.BagNumber"
+                               data-userid="@item.UserID"
+                               data-fareid="@item.FareID">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="19" class="text-center">No records found</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<!-- ✅ Detail Panel -->
+<div id="detailPanel" class="w-100 shadow-sm mt-4" style="display: none; margin-bottom:40px;">
+    <div class="card-header bg-primary text-white text-center">
+        <strong>Transaction Details</strong>
+    </div>
+    <div class="card-body">
+        <div class="row mb-2 p-4">
+            <!-- Column 1 -->
+            <div class="col-md-4">
+                <p><strong>Transaction No:</strong> <span id="lblTxnNo" class="text-muted"></span></p>
+                <p><strong>Receipt No:</strong> <span id="lblReceiptNumber" class="text-muted"></span></p>
+                <p><strong>Date Time:</strong> <span id="lblDateTime" class="text-muted"></span></p>
+                <p><strong>Vehicle No:</strong> <span id="lblVehicleNo" class="text-muted"></span></p>
+                <p><strong>Lane No:</strong> <span id="lblLaneId" class="text-muted"></span></p>
+                <p><strong>Amount:</strong> <span id="lblAmount" class="text-muted"></span></p>
+                <p><strong>ExemptionID:</strong> <span id="lblExemptionID" class="text-muted"></span></p>
+                <p><strong>ValidatorClass:</strong> <span id="lblValidatorClass" class="text-muted"></span></p>
+            </div>
+            <!-- Column 2 -->
+            <div class="col-md-4">
+                <p><strong>Payment MeansType:</strong> <span id="lblPaymentMeansType" class="text-muted"></span></p>
+                @* <p><strong>Payment Mode:</strong> <span id="lblPaymentMode" class="text-muted"></span></p> *@
+                <p><strong>Shift No:</strong> <span id="lblShiftNumber" class="text-muted"></span></p>
+                <p><strong>TC Class:</strong> <span id="lblTCClass" class="text-muted"></span></p>
+                <p><strong>AVC Class:</strong> <span id="lblAVCClass" class="text-muted"></span></p>
+                <p><strong>IsUnder Weight:</strong> <span id="lblIsUnderWeight" class="text-muted"></span></p>
+                <p><strong>SWB Weight:</strong> <span id="lblSWBWeight" class="text-muted"></span></p>
+            </div>
+            <!-- Column 3 -->
+            <div class="col-md-4">
+                <p><strong>SWB Amount:</strong> <span id="lblSWBAmount" class="text-muted"></span></p>
+                <p><strong>Simulation:</strong> <span id="lblSimulation" class="text-muted"></span></p>
+                <p><strong>Bag Number:</strong> <span id="lblBagNumber" class="text-muted"></span></p>
+                <p><strong>User ID:</strong> <span id="lblUserID" class="text-muted"></span></p>
+                <p><strong>Fare ID:</strong> <span id="lblFareID" class="text-muted"></span></p>
+            </div>
+        </div>
+    </div>
+     
+    <!-- Remarks -->
+    <div class="mb-3 px-3">
+        <label for="txtRemark" class="form-label"><strong>Remarks:</strong></label>
+        <textarea id="txtRemark" class="form-control" rows="2" placeholder="Enter remarks here..."></textarea>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center mt-3">
+        <div class="btn-group g-2" role="group">
+            <button id="btnAcceptTC_NonFastTag" class="btn btn-success px-4">Accept TC</button>
+            <button id="btnAudit" class="btn btn-danger px-4">Audit</button>
+            <button id="btnAcceptAVC" class="btn btn-primary px-4">Accept AVC</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ✅ Media Box -->
+<div id="mediaBox" class="w-100 shadow-sm mb-5" style="display: none;">
+    <div class="card-header bg-secondary text-white text-center">
+        <strong>Captured Media</strong>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+
+            <!-- Lane ICS Video -->
+            <div class="col-md-4 text-center">
+                <div class="fw-bold mb-2">Lane ICS Video</div>
+                <video id="txnVideo" controls class="media-box" style="border: 1px solid #ccc;">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="col-md-8">
+                <div class="row g-2 text-center">
+                    <!-- Lane ICS Image -->
+                    <div class="col-md-4">
+                        <div class="fw-bold mb-2">Lane ICS Image</div>
+                        <img id="img1" src="" class="media-box img-thumbnail" style="object-fit: cover;" />
+                    </div>
+
+                    <!-- Lane LPIC Image -->
+                    <div class="col-md-4">
+                        <div class="fw-bold mb-2">Lane LPIC Image</div>
+                        <img id="img2" src="" class="media-box img-thumbnail" style="object-fit: cover;" />
+                    </div>
+
+                    <!-- AVC Image -->
+                    <div class="col-md-4">
+                        <div class="fw-bold mb-2">AVC Image</div>
+                        <img id="img3" src="" class="media-box img-thumbnail" style="object-fit: cover;" />
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JavaScript to Handle View Click -->
+<script>
+    $(document).ready(function () {
+        $('.view-btn').on('click', function (e) {
+            e.preventDefault();
+
+            const transactionNumber = $(this).data('txnno');
+            const shiftNumber = "100";
+            const paymentMeansType = "19";
+
+            $('#lblTxnNo').text($(this).data('txnno'));
+            $('#lblReceiptNumber').text($(this).data('receiptnumber'));
+            $('#lblDateTime').text($(this).data('datetime'));
+            $('#lblVehicleNo').text($(this).data('vehicleno'));
+            $('#lblLaneId').text($(this).data('laneid'));
+            $('#lblAmount').text($(this).data('amount'));
+            $('#lblTxnType').text($(this).data('txntype'));
+            // $('#lblPaymentMode').text($(this).data('paymentmode'));
+            $('#lblExemption').text($(this).data('exemption'));
+            $('#lblTC').text($(this).data('tc'));
+            $('#lblSWBWeight').text($(this).data('swbweight'));
+            $('#lblAVCClass').text($(this).data('avcclass'));
+            $('#lblOverload').text($(this).data('overload'));
+            $('#lblWIM').text($(this).data('wim'));
+            $('#lblSubClass').text($(this).data('subclass'));
+            $('#lblSimulation').text($(this).data('simulation'));
+            $('#lblValidator').text($(this).data('validator'));
+            $('#lblShiftNumber').text($(this).data('shiftnumber'));
+            $('#lblTCClass').text($(this).data('tcclass'));
+            $('#lblIsUnderWeight').text($(this).data('isunderweight'));
+            $('#lblSWBAmount').text($(this).data('swbamount'));
+            $('#lblBagNumber').text($(this).data('bagnumber'));
+            $('#lblUserID').text($(this).data('userid'));
+            $('#lblPaymentMeansType').text($(this).data('paymentmeantype'));
+            $('#lblExemptionID').text($(this).data('exemptionid'));
+            $('#lblValidatorClass').text($(this).data('validatorclass'));
+            $('#lblFareID').text($(this).data('fareid'));
+
+
+            // 🔄 Load media via AJAX
+            $.getJSON('/NonFastTag/GetMedia', {
+                transactionNumber: transactionNumber,
+                shiftNumber: shiftNumber,
+                paymentMeansType: paymentMeansType
+            }, function (data) {
+                // Set video
+                if (data.videoPath) {
+                    $('#txnVideo source').attr('src', data.videoPath);
+                    $('#txnVideo')[0].load();
+                }
+
+                // Set images
+                $('#img1, #img2, #img3').attr('src', ''); // Reset
+                data.imagePaths.forEach((img, index) => {
+                    $(`#img${index + 1}`).attr('src', img);
+                });
+
+                $('#mediaBox').show();
+            });
+
+            $('#detailPanel').show();
+
+               // ✅ Smooth scroll to the panel
+            $('html, body').animate({
+                scrollTop: $('#detailPanel').offset().top - 20
+            }, 500);
+        });
+    });
+</script>
+
+<script>
+    window.onload = function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedLane = urlParams.get('lane');
+        const shiftType = urlParams.get('shiftType');
+        const userId = urlParams.get('user');
+
+        if (selectedLane !== null) {
+            document.getElementById('lane').value = selectedLane;
+        }
+        if (shiftType !== null) {
+            document.getElementById('shiftType').value = shiftType;
+        }
+        if (userId !== null) {
+            document.getElementById('user').value = userId;
+        }
+
+    };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        $('#btnAcceptTC_NonFastTag').on('click', function (e) {
+            e.preventDefault();
+
+            // ✅ Get details from the detail panel
+            const plazaID = 1;
+            const transactionNumber = $('#lblTxnNo').text().trim();
+            const shiftNumber = $('#lblShiftNumber').text().trim();
+            const validator = $('#lblUserID').text().trim();
+            const exemptionID = $('#lblExemptionID').text().trim();
+            const tccClass = $('#lblTCClass').text().trim();
+            const avcClass = $('#lblAVCClass').text().trim();
+            const validatorClass = $('#lblValidatorClass').text().trim();
+            const fareID = $('#lblFareID').text().trim();
+            const paymentMeansType = $('#lblPaymentMeansType').text().trim();
+            const shiftvalidationMode = $('#lblSimulation').text().trim();
+            const remark = $('#txtRemark').val().trim();
+
+            // ✅ Validate Remarks
+            if (!remark) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Remark',
+                    text: 'Please enter a remark before proceeding.',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            // ✅ Call Controller via AJAX
+            $.ajax({
+                url: '/NonFastTag/AcceptTC_NonFastTag',
+                type: 'GET',
+                data: {
+                    plazaID: plazaID,
+                    transactionNumber: transactionNumber,
+                    shiftNumber: shiftNumber,
+                    validator: validator,
+                    exemptionID: exemptionID,
+                    tccClass: tccClass,
+                    avcClass: avcClass,
+                    validatorClass: validatorClass,
+                    fareID: fareID,
+                    paymentMeansType: paymentMeansType,
+                    shiftvalidationMode: shiftvalidationMode,
+                    remark: remark
+                },
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Transaction TC accepted successfully.',
+                        confirmButtonColor: '#28a745'
+                    }).then(() => {
+                        location.reload(); // Reload to refresh grid data
+                    });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#btnAudit').on('click', function (e) {
+            e.preventDefault();
+
+            // ✅ Collect values
+            const plazaID = 1;
+            const transactionNumber = $('#lblTxnNo').text().trim();
+            const shiftNumber = $('#lblShiftNumber').text().trim();
+            const exemptionID = $('#lblExemptionID').text().trim();
+            const tccClass = $('#lblTCClass').text().trim();
+            const avcClass = $('#lblAVCClass').text().trim();
+            const validatorClass = $('#lblValidatorClass').text().trim();
+            const fareID = $('#lblFareID').text().trim();
+            const paymentMeansType = $('#lblPaymentMeansType').text().trim();
+            const shiftvalidationMode = $('#lblSimulation').text().trim();
+            const subClass = $('#lblValidatorClass').text().trim();
+            const violationType = $('#lblTCClass').text().trim();
+            const plateNumber = $('#lblVehicleNo').text().trim();
+            const vehicleClass = $('#lblAVCClass').text().trim();
+            const remark = $('#txtRemark').val().trim();
+
+            // ✅ CASE 1: PaymentMeansType = 1 → Violation popup first
+            if (paymentMeansType === "1") {
+                Swal.fire({
+                    title: 'Violation Form',
+                    html: `
+                        <form id="swal-form">
+                            <label style="display:block; text-align:left; font-size:14px"><b>Plate Number</b></label>
+                            <input id="swal-plate" class="swal2-input" value="${plateNumber}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>Vehicle Class</b></label>
+                            <input id="swal-vehclass" class="swal2-input" value="${vehicleClass}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>Sub Class</b></label>
+                            <input id="swal-subclass" class="swal2-input" value="${subClass}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>Violation Type</b></label>
+                            <input id="swal-violation" class="swal2-input" value="${violationType}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>Remark</b></label>
+                            <textarea id="swal-remark" class="swal2-textarea">${remark}</textarea>
+                        </form>
+                    `,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit Violation',
+                    preConfirm: () => {
+                        const form = document.getElementById('swal-form');
+                        // Optional: basic validation
+                        if (!form.checkValidity()) {
+                            form.reportValidity();
+                            return false; // prevent closing
+                        }
+                        return {
+                            plateNumber: document.getElementById('swal-plate').value,
+                            vehicleClass: document.getElementById('swal-vehclass').value,
+                            subClass: document.getElementById('swal-subclass').value,
+                            violationType: document.getElementById('swal-violation').value,
+                            remark: document.getElementById('swal-remark').value
+                        }
+                    }
+                }).then((violationForm) => {
+                    if (violationForm.isConfirmed) {
+                        // 🔄 Call Violation API
+                        $.ajax({
+                            url: '/NonFastTag/VoilationAudit_NonFastTag',
+                            type: 'GET',
+                            data: {
+                                plazaID,
+                                transactionNumber,
+                                shiftNumber,
+                                ...violationForm.value,
+                                shiftvalidationMode
+                            },
+                            success: function (resp) {
+                                if (resp.success) {
+                                    // ✅ Violation passed → Audit confirmation popup
+                                    showAuditPopup({
+                                        transactionNumber,
+                                        avcClass,
+                                        tccClass,
+                                        fareID,
+                                        remark: violationForm.value.remark,
+                                        plateNumber: violationForm.value.plateNumber
+                                    });
+                                } else {
+                                    Swal.fire('Violation Failed', resp.message, 'warning');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'Violation check failed.', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+            // ✅ CASE 2: PaymentMeansType != 1 → Direct Audit popup
+            else {
+                showAuditPopup({ transactionNumber, avcClass, tccClass, fareID, remark, plateNumber });
+            }
+
+            // 🔄 Audit popup function
+            function showAuditPopup(values) {
+                Swal.fire({
+                    title: 'Audit Confirmation',
+                    html: `
+                        <form id="swal-audit-form">
+                            <label style="display:block; text-align:left; font-size:14px"><b>Transaction Number</b></label>
+                            <input id="swal-txn" class="swal2-input" value="${values.transactionNumber}" readonly>
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>Plate Number</b></label>
+                            <input id="swal-plate-audit" class="swal2-input" value="${values.plateNumber}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>AVC Class</b></label>
+                            <input id="swal-avc" class="swal2-input" value="${values.avcClass}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>TCC Class</b></label>
+                            <input id="swal-tcc" class="swal2-input" value="${values.tccClass}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>Fare ID</b></label>
+                            <input id="swal-fare" class="swal2-input" value="${values.fareID}">
+
+                            <label style="display:block; text-align:left; font-size:14px"><b>Remark</b></label>
+                            <textarea id="swal-remark-audit" class="swal2-textarea">${values.remark}</textarea>
+                        </form>
+                    `,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit Audit',
+                    preConfirm: () => {
+                        const form = document.getElementById('swal-audit-form');
+                        if (!form.checkValidity()) {
+                            form.reportValidity();
+                            return false; // prevents closing if invalid
+                        }
+                        return {
+                            transactionNumber: document.getElementById('swal-txn').value,
+                            plateNumber: document.getElementById('swal-plate-audit').value,
+                            avcClass: document.getElementById('swal-avc').value,
+                            tccClass: document.getElementById('swal-tcc').value,
+                            fareID: document.getElementById('swal-fare').value,
+                            remark: document.getElementById('swal-remark-audit').value
+                        }
+                    }
+                }).then((auditForm) => {
+                    if (auditForm.isConfirmed) {
+                        // 🔄 Call Audit API
+                        $.ajax({
+                            url: '/NonFastTag/Audit_NonFastTag',
+                            type: 'GET',
+                            data: {
+                                plazaID,
+                                shiftNumber,
+                                exemptionID,
+                                validatorClass,
+                                paymentMeansType,
+                                shiftvalidationMode,
+                                subClass,
+                                violationType,
+                                ...auditForm.value
+                            },
+                            success: function (resp) {
+                                if (resp.success) {
+                                    Swal.fire('Audit Successful', resp.message, 'success')
+                                        .then(() => location.reload());
+                                } else {
+                                    Swal.fire('Audit Failed', resp.message, 'warning');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'Audit process failed.', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+
+
+</script>
+
+                                        <script>
+    $(document).ready(function () {
+        $('#btnAcceptAVC').on('click', function (e) {
+            e.preventDefault();
+
+            // ✅ Get details from the detail panel
+            const plazaID = 1;
+            const transactionNumber = $('#lblTxnNo').text().trim();
+            const shiftNumber = $('#lblShiftNumber').text().trim();
+            const validator = $('#lblUserID').text().trim();
+            const exemptionID = $('#lblExemptionID').text().trim();
+            const tccClass = $('#lblTCClass').text().trim();
+            const avcClass = $('#lblAVCClass').text().trim();
+            const validatorClass = $('#lblValidatorClass').text().trim();
+            const fareID = $('#lblFareID').text().trim();
+            const paymentMeansType = $('#lblPaymentMeansType').text().trim();
+            const shiftvalidationMode = $('#lblSimulation').text().trim();
+            const remark = $('#txtRemark').val().trim();
+            const subClass = $('#lblValidatorClass').text().trim();
+            const violationType = $('#lblTCClass').text().trim();
+
+            // ✅ Validate Remarks
+            if (!remark) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Remark',
+                    text: 'Please enter a remark before proceeding.',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            // ✅ Call Controller via AJAX
+            $.ajax({
+                url: '/NonFastTag/AcceptAVC_NonFastTag',
+                type: 'GET',
+                data: {
+                    plazaID: plazaID,
+                    transactionNumber: transactionNumber,
+                    shiftNumber: shiftNumber,
+                    validator: validator,
+                    exemptionID: exemptionID,
+                    tccClass: tccClass,
+                    avcClass: avcClass,
+                    validatorClass: validatorClass,
+                    fareID: fareID,
+                    paymentMeansType: paymentMeansType,
+                    shiftvalidationMode: shiftvalidationMode,
+                    subClass: subClass,
+                    violationType: violationType,
+                    remark: remark
+                },
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Transaction AVC accepted successfully.',
+                        confirmButtonColor: '#28a745'
+                    }).then(() => {
+                        location.reload(); // Reload to refresh grid data
+                    });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            });
+        });
+    });
+</script>
+

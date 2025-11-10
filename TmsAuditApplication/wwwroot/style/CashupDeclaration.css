@@ -1,0 +1,52 @@
+﻿/* Body style */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    /* Remove linear gradient and add background image */
+    background-image: url('/images/cashBg.jpeg');
+    background-size: cover; /* Make image cover the whole viewport */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent repeating */
+/*    position: relative;*/
+}
+
+
+
+/* Floating cash animation */
+/*@keyframes floatUp {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
+}
+
+.floating-cash {
+    position: absolute;
+    bottom: 0;
+    width: 200px;
+    height: 220px;
+    background-image: url('/images/cashImage.png');*/ /* relative path to your image */
+    /*background-size: cover;
+    animation: floatUp linear infinite;
+}*/
+
+
+.form-label {
+    margin-left: 3%;
+}
+
+#cashupUI {
+    position: absolute;
+}
+
+h5{
+    font-weight:bold;
+}

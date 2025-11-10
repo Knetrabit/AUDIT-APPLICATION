@@ -1,0 +1,176 @@
+﻿@model AssignRightsViewModel
+@{
+    ViewBag.Title = "Assign Rights";
+}
+
+<div class="container mt-3 border p-3 rounded" style="background:#e8eef3;">
+    <h4 class="text-center mb-3">Assign Permissions by Job Position</h4>
+
+    <div class="mb-3 d-flex align-items-center">
+        <label class="me-2 fw-bold">Job Position:</label>
+        <select id="ddlJobPosition" class="form-select w-25">
+            <option value="">-- Select Job Position --</option>
+            @foreach (var p in Model.JobPositions)
+            {
+                <option value="@p.Id">@p.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="row">
+        <!-- Assigned -->
+        <div class="col-md-5 border p-3 bg-white rounded">
+            <h5 class="text-primary mb-3">Assigned Rights</h5>
+
+            <select id="sortAssigned" class="form-control mb-2">
+                <option value="">Sort by</option>
+                <option value="name">Name</option>
+                <option value="id">ID</option>
+            </select>
+
+            <ul id="assignedList" class="list-group" style="height:350px; overflow-y:auto;">
+                @foreach (var r in Model.AssignedRights)
+                {
+                    <li class="list-group-item" data-id="@r.Id" data-name="@r.RightName">
+                        <input type="checkbox" class="chkRight" value="@r.Id" /> @r.RightName
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Middle -->
+        <div class="col-md-2 text-center d-flex align-items-center justify-content-center flex-column">
+            <button id="btnAssign" class="btn btn-success mb-3">&lt;&lt; Assign Rights</button>
+            <button id="btnRemove" class="btn btn-danger">Remove Rights &gt;&gt;</button>
+        </div>
+
+        <!-- Unassigned -->
+        <div class="col-md-5 border p-3 bg-white rounded">
+            <h5 class="text-primary mb-3">Unassigned Rights</h5>
+
+            <select id="sortUnassigned" class="form-control mb-2">
+                <option value="">Sort by</option>
+                <option value="name">Name</option>
+                <option value="id">ID</option>
+            </select>
+
+            <ul id="unassignedList" class="list-group" style="height:350px; overflow-y:auto;">
+                @foreach (var r in Model.UnassignedRights)
+                {
+                    <li class="list-group-item" data-id="@r.Id" data-name="@r.RightName">
+                        <input type="checkbox" class="chkRight" value="@r.Id" /> @r.RightName
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <button id="btnSave" class="btn btn-primary mt-3">Save Changes</button>
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+        // Move from Unassigned → Assigned
+        $("#btnAssign").click(function () {
+            $("#unassignedList input.chkRight:checked").each(function () {
+                var item = $(this).closest("li");
+                $(this).prop("checked", false);
+                $("#assignedList").append(item);
+            });
+        });
+
+        // Move from Assigned → Unassigned
+        $("#btnRemove").click(function () {
+            $("#assignedList input.chkRight:checked").each(function () {
+                var item = $(this).closest("li");
+                $(this).prop("checked", false);
+                $("#unassignedList").append(item);
+            });
+        });
+
+        // Sorting Function
+        function sortList(list, type) {
+            var items = list.children("li").get();
+
+            items.sort(function (a, b) {
+                if (type === "name")
+                    return $(a).data("name").localeCompare($(b).data("name"));
+                else if (type === "id")
+                    return $(a).data("id") - $(b).data("id");
+            });
+
+            $.each(items, function (i, li) { list.append(li); });
+        }
+
+        $("#sortAssigned").change(function () {
+            sortList($("#assignedList"), $(this).val());
+        });
+
+        $("#sortUnassigned").change(function () {
+            sortList($("#unassignedList"), $(this).val());
+        });
+    </script>
+
+      
+    <script>
+        $('#ddlJobPosition').change(function () {
+            var id = $(this).val();
+            if (id) {
+                $.ajax({
+                    url: '/UserRights/GetRightsByPosition?jobPositionId=' + id,
+                    type: 'GET',
+                    success: function (res) {
+
+                        let assignedHtml = "";
+                        res.assigned.forEach(r => {
+                            assignedHtml += `
+                                <li class="list-group-item" data-id="${r.id}" data-name="${r.rightName}">
+                                    <input type="checkbox" class="chkRight" value="${r.id}" /> ${r.rightName}
+                                </li>`;
+                        });
+                        $("#assignedList").html(assignedHtml);
+
+                        let unassignedHtml = "";
+                        res.unassigned.forEach(r => {
+                            unassignedHtml += `
+                                <li class="list-group-item" data-id="${r.id}" data-name="${r.rightName}">
+                                    <input type="checkbox" class="chkRight" value="${r.id}" /> ${r.rightName}
+                                </li>`;
+                        });
+                        $("#unassignedList").html(unassignedHtml);
+                    }
+
+                });
+            }
+        });
+
+         $("#btnSave").click(function () {
+
+            let assignedIds = [];
+            $("#assignedList li").each(function () {
+                assignedIds.push($(this).data("id"));
+            });
+
+            $.ajax({
+                url: "/UserRights/SaveAssignedRights",
+                type: "POST",
+                data: {
+                    jobPositionId: $("#ddlJobPosition").val(),
+                    rights: assignedIds
+                },
+                traditional: true, // Important for sending list
+                success: function (res) {
+                    if (res.success) {
+                        alert(res.message);
+                    }
+                }
+            });
+        });
+
+
+    </script>
+
+
+}

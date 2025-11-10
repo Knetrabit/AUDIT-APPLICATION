@@ -1,0 +1,598 @@
+﻿@model List<object>
+
+@{
+    ViewData["Title"] = "FastTag Review";
+}
+<h5 class="mb-4" style="color:blue; text-align:center;">@ViewData["Title"]</h5>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Compact Filter Section -->
+<div class="w-100 mb-2 shadow-sm bg-light border rounded filter-container p-3" style="background-color:lightgrey">
+    <form id="filterForm" >
+        <div class="row gx-2 gy-1 align-items-end">
+
+            <div class="col-md-2">
+                <label for="fromDate" class="form-label small mb-1">From</label>
+                @* <input type="datetime-local" id="fromDate" name="fromDate" class="form-control form-control-sm"
+                       value="@DateTime.Today.AddDays(-1).AddSeconds(1).ToString("yyyy-MM-ddTHH:mm:ss")" required /> *@
+                <input type="datetime-local" id="fromDate" name="fromDate" class="form-control form-control-sm"
+                       value="@DateTime.Today.AddSeconds(1).ToString("yyyy-MM-ddTHH:mm:ss")" required />
+
+            </div>
+
+            <div class="col-md-2">
+                <label for="toDate" class="form-label small mb-1">To</label>
+                <input type="datetime-local" id="toDate" name="toDate" class="form-control form-control-sm"
+                       value="@DateTime.Today.AddDays(1).AddSeconds(-1).ToString("yyyy-MM-ddTHH:mm:ss")" required />
+            </div>
+
+            <div class="col-md-2">
+                <label for="laneType" class="form-label small mb-1">Lane</label>
+                <select id="laneType" name="laneType" class="form-select form-select-sm">
+                    <option value="0">-- Select --</option>
+                    @for (int i = 1; i <= 8; i++)
+                    {
+                        <option value="@i">Lane @i</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="tagClass" class="form-label small mb-1">Tag Class</label>
+                <select id="tagClass" name="tagClass" class="form-select form-select-sm">
+                    <option value="0">-- Select --</option>
+                </select>
+            </div>
+
+            <div class="col-md-1">
+                <label class="form-label small mb-1 d-block">Manual</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" value="true" id="isManual" name="isManual" />
+                </div>
+            </div>
+
+            <div class="col-md-1">
+                <label class="form-label small mb-1 d-block">Violation</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" value="true" id="isViolation" name="isViolation" />
+                </div>
+            </div>
+
+            <div class="col-md-1">
+                <button type="button" id="btnView" class="btn btn-sm btn-primary w-100">View</button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+
+<!-- ✅ Grid Section -->
+<div id="tableContainer">
+<div class="table-responsive shadow-sm mt-3" style="max-height: 540px; overflow-y: auto; margin-bottom: 20px;">
+    <table class="table table-bordered table-hover table-striped table-sm small">
+        <thead class="table-dark text-center sticky-top" style="top: 0; z-index: 10;">
+            <tr>
+                <th>Txn No</th>
+                <th>Act TxnID</th>
+                <th class="plate-no">Plate No</th>
+                <th>Lane ID</th>
+                <th>Shift Number</th>
+                <th class="datetime">DateTime</th>
+                <th>Tag ID</th>
+                <th>AVC Class</th>
+                <th class="tag-class">Tag Class</th>
+                <th>Amount</th>
+                <th>Fare Type</th>
+                <th>AVC Class ID</th>
+                <th class="validated-col">Validated</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="text-center">
+                        <td>@(item?.GetType().GetProperty("Tolltransactionnumber")?.GetValue(item))</td>
+                        <td>@(item?.GetType().GetProperty("ActTransactionID")?.GetValue(item))</td>
+                        <td class="plate-no">@(item?.GetType().GetProperty("PlateNumber")?.GetValue(item))</td>
+                        <td>@(item?.GetType().GetProperty("Laneid")?.GetValue(item))</td>
+                        <td>@(item?.GetType().GetProperty("ShiftNumber")?.GetValue(item))</td>
+                        <td class="datetime">@(item?.GetType().GetProperty("DateTime")?.GetValue(item))</td>
+                        <td>@(item?.GetType().GetProperty("Tagid")?.GetValue(item))</td>
+                        <td>@(item?.GetType().GetProperty("AVCClass")?.GetValue(item))</td>
+                        <td class="tag-class">@(item?.GetType().GetProperty("TagClass")?.GetValue(item))</td>
+                        <td>₹ @(item?.GetType().GetProperty("Amount")?.GetValue(item))</td>
+                        <td>@(item?.GetType().GetProperty("FareType")?.GetValue(item))</td>
+                        <td>@(item?.GetType().GetProperty("AVCClassID")?.GetValue(item))</td>
+                        <td class="validated-col">
+                            @{
+                                var validated = item?.GetType().GetProperty("IsValidated")?.GetValue(item);
+                                @((validated != null) ? ((bool)validated ? "Yes" : "No") : "No")
+                            }
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-primary view-btn"
+                               data-txnno="@item?.GetType().GetProperty("Tolltransactionnumber")?.GetValue(item)"
+                               data-acttxnid="@item?.GetType().GetProperty("ActTransactionID")?.GetValue(item)"
+                               data-vehicleno="@item?.GetType().GetProperty("PlateNumber")?.GetValue(item)"
+                               data-laneid="@item?.GetType().GetProperty("Laneid")?.GetValue(item)"
+                               data-shiftnumber="@item?.GetType().GetProperty("ShiftNumber")?.GetValue(item)"
+                               data-datetime="@item?.GetType().GetProperty("DateTime")?.GetValue(item)"
+                               data-tagid="@item?.GetType().GetProperty("Tagid")?.GetValue(item)"
+                               data-avcclass="@item?.GetType().GetProperty("AVCClass")?.GetValue(item)"
+                               data-tagclass="@item?.GetType().GetProperty("TagClass")?.GetValue(item)"
+                               data-amount="@item?.GetType().GetProperty("Amount")?.GetValue(item)"
+                               data-faretype="@item?.GetType().GetProperty("FareType")?.GetValue(item)"
+                               data-avcclassid="@item?.GetType().GetProperty("AVCClassID")?.GetValue(item)"
+                               data-isvalidated="@item?.GetType().GetProperty("IsValidated")?.GetValue(item)">                             
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="12" class="text-center">No records found</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+</div>
+
+<!-- Detail Panel -->
+<div id="detailPanel" class="w-98 shadow-sm mt-4" style="display: none; margin-bottom:40px;">
+    <div class="card-header bg-primary text-white text-center">
+        <strong>Transaction Details</strong>
+    </div>
+    <div class="card-body" style="padding:10px;">
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <p><strong>Txn No:</strong> <span id="lblTxnNo" class="text-muted"></span></p>
+                <p><strong>Act Txn ID:</strong> <span id="lblActTxnId" class="text-muted"></span></p>
+                <p><strong>Plate No:</strong> <span id="lblPlateNo" class="text-muted"></span></p>
+                <p><strong>Lane ID:</strong> <span id="lblLaneId" class="text-muted"></span></p>
+                <p><strong>Shift Number:</strong> <span id="lblShiftNumber" class="text-muted"></span></p>
+                <p><strong>Date Time:</strong> <span id="lblDateTime" class="text-muted"></span></p>
+                <p><strong>Avc Class Id:</strong> <span id="lblAvcClassID" class="text-muted"></span></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Tag ID:</strong> <span id="lblTagId" class="text-muted"></span></p>
+                <p><strong>AVC Class:</strong> <span id="lblAVCClass" class="text-muted"></span></p>
+                <p><strong>Tag Class:</strong> <span id="lblTagClass" class="text-muted"></span></p>
+                <p><strong>Amount:</strong> <span id="lblAmount" class="text-muted"></span></p>
+                <p><strong>Fare Type:</strong> <span id="lblFareType" class="text-muted"></span></p>
+                <p><strong>IsMannual:</strong> <span id="lblIsMannual" class="text-muted"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons (dynamic placeholder) -->
+    <div id="actionButtons" class="text-center mt-3"></div>
+
+    <!-- Action Buttons -->
+    @* <div class="text-center mt-3">
+        <div class="btn-group" role="group">
+            <button id="btnAuditorAccept" class="btn btn-success px-4">Auditor Accept</button>
+            <button id="btnAuditorReject" class="btn btn-danger px-4">Auditor Reject</button>
+            <button id="btnSIAccept" class="btn btn-primary px-4">SI Accept</button>
+            <button id="btnSIReject" class="btn btn-warning px-4 text-dark">SI Reject</button>
+        </div>
+    </div> *@
+</div>
+
+<!-- Rejection Popup -->
+@* <div id="rejectPopup" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background-color: antiquewhite; border: 2px solid #000; padding: 20px; border-radius: 8px; z-index: 9999; width: 300px;">
+    <h4 style="margin-top:0;">CCH Audit Class</h4>
+    <p><strong>Transaction ID:</strong> <span id="popupTxnId"></span></p>
+    <p><strong>Shift Number:</strong> <span id="popupShiftNumber"></span></p>
+    <p><strong>Avc Class:</strong> <span id="popupAvcClass"></span></p>
+
+    <div style="margin: 10px 0;">
+        <label for="avcClassPop"><strong>Class:</strong></label>
+        <select id="avcClassPop" style="width:100%; padding:5px;"></select>
+    </div>
+
+    <div style="text-align:center; margin-top:10px;">
+        <button id="popupOkBtn" style="padding:5px 15px; margin-right:10px;">OK</button>
+        <button id="popupCancelBtn" style="padding:5px 15px;">Cancel</button>
+    </div>
+</div> *@
+
+
+<!-- ✅ Media Box -->
+@* <div id="mediaBox" class="w-100 shadow-sm mb-5" style="display: none;">
+    <div class="card-header bg-secondary text-white text-center">
+        <strong>Captured Media</strong>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <!-- Lane ICS Video -->
+                <video id="txnVideo" controls class="media-box" style="border: 1px solid #ccc;">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="col-md-8 d-flex flex-wrap gap-2">
+                <!-- Lane ICS Image -->
+                <img id="img1" src="" class="media-box img-thumbnail" />
+                <!-- Lane LPIC Image -->
+                <img id="img2" src="" class="media-box img-thumbnail" />
+                <!-- AVC Image -->
+                <img id="img3" src="" class="media-box img-thumbnail" />
+            </div>
+        </div>
+    </div>
+</div> *@
+
+<!-- ✅ Media Box -->
+<div id="mediaBox" class="w-100 shadow-sm mb-5" style="display: none;">
+    <div class="card-header bg-secondary text-white text-center">
+        <strong>Captured Media</strong>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+
+            <!-- Lane ICS Video -->
+            <div class="col-md-4 text-center">
+                <div class="fw-bold mb-2">Lane ICS Video</div>
+                <video id="txnVideo" controls class="media-box" style="border: 1px solid #ccc;">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="col-md-8">
+                <div class="row g-2 text-center">
+                    <!-- Lane ICS Image -->
+                    <div class="col-md-4">
+                        <div class="fw-bold mb-2">Lane ICS Image</div>
+                        <img id="img1" src="" class="media-box img-thumbnail" style="object-fit: cover;" />
+                    </div>
+
+                    <!-- Lane LPIC Image -->
+                    <div class="col-md-4">
+                        <div class="fw-bold mb-2">Lane LPIC Image</div>
+                        <img id="img2" src="" class="media-box img-thumbnail" style="object-fit: cover;" />
+                    </div>
+
+                    <!-- AVC Image -->
+                    <div class="col-md-4">
+                        <div class="fw-bold mb-2">AVC Image</div>
+                        <img id="img3" src="" class="media-box img-thumbnail" style="object-fit: cover;" />
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Prevent Enter key from refreshing the page
+        $('#filterForm').on('submit', function (e) {
+            e.preventDefault();
+        });
+
+        // Handle View button click
+        $('#btnView').on('click', function () {
+            const filters = {
+                fromDate: $('#fromDate').val(),
+                toDate: $('#toDate').val(),
+                laneType: $('#laneType').val(),
+                tagClass: $('#tagClass').val(),
+                isManual: $('#isManual').is(':checked'),
+                isViolation: $('#isViolation').is(':checked')
+            };
+
+            // 🔹 Call your controller with AJAX
+            $.get('/FastTag/Index', filters, function (data) {
+                // Replace table section dynamically
+                $('#tableContainer').html($(data).find('#tableContainer').html());
+            });
+        });
+    });
+</script>
+
+
+<script>
+        // Delegated binding for dynamically loaded rows
+    $(document).on('click', '.view-btn', function (e) {
+        e.preventDefault();
+
+        const transactionNumber = $(this).data('txnno');
+        const shiftNumber = $(this).data('shiftnumber');
+        const paymentMeansType = "19";
+
+        $('#lblTxnNo').text($(this).data('txnno'));
+        $('#lblActTxnId').text($(this).data('acttxnid'));
+        $('#lblPlateNo').text($(this).data('vehicleno'));
+        $('#lblLaneId').text($(this).data('laneid'));
+        $('#lblShiftNumber').text($(this).data('shiftnumber'));
+        $('#lblDateTime').text($(this).data('datetime'));
+        $('#lblTagId').text($(this).data('tagid'));
+        $('#lblAVCClass').text($(this).data('avcclass'));
+        $('#lblTagClass').text($(this).data('tagclass'));
+        $('#lblAmount').text($(this).data('amount'));
+        $('#lblFareType').text($(this).data('faretype'));
+        $('#lblIsMannual').text($(this).data('isvalidated'));
+        $('#lblAvcClassID').text($(this).data('avcclassid'));
+
+        // 🔄 Load media via AJAX
+        $.getJSON('/FastTag/GetMedia', {
+            transactionNumber,
+            shiftNumber,
+            paymentMeansType
+        }, function (data) {
+            if (data.videoPath) {
+                $('#txnVideo source').attr('src', data.videoPath);
+                $('#txnVideo')[0].load();
+            }
+            $('#img1, #img2, #img3').attr('src', ''); // Reset
+            data.imagePaths.forEach((img, i) => $(`#img${i + 1}`).attr('src', img));
+            $('#mediaBox').show();
+        });
+
+        $('#detailPanel').show();
+
+        // ✅ Build buttons dynamically
+        const isManualChecked = $('#isManual').is(':checked');
+        const isViolationChecked = $('#isViolation').is(':checked');
+        let buttonsHtml = "";
+        if (isManualChecked) {
+            buttonsHtml = `
+                <div class="btn-group" role="group">
+                    <button id="btnAuditorAccept" class="btn btn-success px-4">Auditor Accept</button>
+                    <button id="btnAuditorReject" class="btn btn-danger px-4">Auditor Reject</button>
+                </div>`;
+        } else if (isViolationChecked) {
+            buttonsHtml = `
+                <div class="btn-group" role="group">
+                    <button id="btnSIAccept" class="btn btn-primary px-4">SI Accept</button>
+                    <button id="btnSIReject" class="btn btn-warning px-4 text-dark">SI Reject</button>
+                </div>`;
+        }
+        $('#actionButtons').html(buttonsHtml);
+
+        $('html, body').animate({ scrollTop: $('#detailPanel').offset().top - 20 }, 500);
+    });
+
+</script>
+
+<script>
+    const tagClasses = [
+        { name: "Car / Jeep / Van", value: "4" },
+        { name: "LCV / LGV / Mini", value: "5" },
+        { name: "Bus (2 Axles)", value: "7" },
+        { name: "Truck (2 Axle)", value: "10" },
+        { name: "3 Axles", value: "6" },
+        { name: "MAV 4 Axle", value: "12" },
+        { name: "MAV 5 Axle", value: "13" },
+        { name: "MAV 6 Axle", value: "14" },
+        { name: "OSV", value: "15" },
+        { name: "Other", value: "1" }
+    ];
+
+    const select = document.getElementById("tagClass");
+
+    tagClasses.forEach(tc => {
+        const opt = document.createElement("option");
+        opt.value = tc.value;
+        opt.text = tc.name;
+        select.appendChild(opt);
+    });
+
+    // Example: log value on change
+    select.addEventListener('change', function () {
+        console.log("Selected NPCI Code:", this.value);
+    });
+</script>
+
+<script>
+    let value = null;
+    $('#isManual').on('change', function () {
+        if ($(this).is(':checked')) {
+            $('.validated-col').show();            
+        } else {
+            $('.validated-col').hide();
+        }
+    });
+
+    // 🔒 Optional: Hide on initial load if unchecked
+    $(function () {
+        if (!$('#isManual').is(':checked')) {
+            $('.validated-col').hide();
+        }
+    });
+</script>
+
+<script>
+    $('#isViolation').on('change', function () {
+        if ($(this).is(':checked')) {
+            $('.validated-col').show();
+        } else {
+            $('.validated-col').hide();
+        }
+    });
+
+    // 🔒 Optional: Hide on initial load if unchecked
+    $(function () {
+        if (!$('#isViolation').is(':checked')) {
+            $('.validated-col').hide();
+        }
+    });
+</script>
+
+@* <script>
+    // Utility functions to get values from detail panel
+    function getTransactionId() {
+        return document.getElementById("lblTxnNo")?.innerText.trim() || "";
+    }
+
+    function getIsManual() {
+        return document.getElementById("lblIsMannual")?.innerText.trim() || "";
+    }
+
+    function getAvcClassId() {
+        return document.getElementById("lblAvcClassID")?.innerText.trim() || "";
+    }
+
+    function getTagClass() {
+        return document.getElementById("lblTagClass")?.innerText.trim() || "";
+    }
+
+    function getAvcClass() {
+        return document.getElementById("lblAVCClass")?.innerText.trim() || "";
+    }
+
+    function getShiftNumber() {
+        return document.getElementById("lblShiftNumber")?.innerText.trim() || "";
+    }
+
+    // Populate tag class dropdown in popup
+    const popAvcClasses = [
+        { name: "Car / Jeep / Van", value: "1" },
+        { name: "LCV / LGV / Mini", value: "2" },
+        { name: "Bus (2 Axles)", value: "3" },
+        { name: "Truck (2 Axle)", value: "4" },
+        { name: "3 Axles", value: "5" },
+        { name: "MAV 4 Axle", value: "6" },
+        { name: "MAV 5 Axle", value: "7" },
+        { name: "MAV 6 Axle", value: "8" },
+        { name: "OSV", value: "9" },
+        { name: "Other", value: "13" }
+    ];
+    const popSelect = document.getElementById("avcClassPop");
+    if (popSelect) {
+        popAvcClasses.forEach(tc => {
+            const popOpt = document.createElement("option");
+            popOpt.value = tc.value;
+            popOpt.text = tc.name;
+            popSelect.appendChild(popOpt);
+        });
+    }
+
+    // Auditor Accept
+    document.getElementById("btnAuditorAccept")?.addEventListener("click", function () {
+        const txnId = getTransactionId();
+        const isManual = getIsManual();
+        const avcClassId = getAvcClassId();            
+        approveTransactionForAuditorAccept(txnId, isManual, avcClassId);
+    });
+
+    function approveTransactionForAuditorAccept(txnId, isManual, avcClassId) {
+        const url = `/FastTag/AuditorAccept?transactionId=${encodeURIComponent(txnId)}&isManual=${encodeURIComponent(isManual)}&avcClassId=${encodeURIComponent(avcClassId)}`;
+
+        fetch(url, {
+            method: "GET", // or "POST" if your action expects POST
+            headers: {
+                "X-Requested-With": "XMLHttpRequest" // Helps server know it's an AJAX call
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json(); // or response.json() if your method returns JSON
+        })
+        .then(data => {
+            console.log("Server response:", data);
+            // You can update the page without reload
+            alert("Transaction approved successfully!");
+            // Optionally refresh part of the UI
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while approving the transaction.");
+        });
+    }
+
+    // Auditor Reject
+    document.getElementById("btnAuditorReject")?.addEventListener("click", function () {
+        const txnId = getTransactionId();
+        const isManual = getIsManual();
+        const shiftNumber = getShiftNumber();
+        const avcClass = getAvcClass();
+        const avcClassId = getAvcClassId();
+
+        if (isManual.toLowerCase() === "yes") {
+            // Direct call if manual
+            approveTransactionForAuditorRejectDirect(txnId, avcClassId);
+        } else {
+            // Show popup if not manual
+            document.getElementById("popupTxnId").innerText = txnId;
+            document.getElementById("popupShiftNumber").innerText = shiftNumber;
+            document.getElementById("popupAvcClass").innerText = avcClass;
+            document.getElementById("rejectPopup").style.display = "block";
+        }
+    });
+
+     function approveTransactionForAuditorRejectDirect(txnId, avcClassId) {
+        fetch(`/FastTag/AuditorRejectDirect?transactionId=${encodeURIComponent(txnId)}&avcClassId=${encodeURIComponent(avcClassId)}`, {
+        method: "GET"
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.json();
+        })
+        .then(data => {
+            console.log("Reject Response:", data);
+            // Update UI after reject
+        })
+        .catch(error => {
+            console.error("Error calling AuditorRejectDirect:", error);
+        });
+    }
+
+    // Popup OK
+    document.getElementById("popupOkBtn")?.addEventListener("click", function () {
+        const txnId = getTransactionId();
+        const selectedClass = document.getElementById("tagClassPop").value;
+        callAuditorRejectProcess(txnId, selectedClass);
+    });
+
+    function callAuditorRejectProcess(txnId, selectedClass) {
+        fetch(`/FastTag/AuditorRejectProcess?transactionId=${encodeURIComponent(txnId)}&isMannual=No&tagClass=${encodeURIComponent(selectedClass)}`, {
+            method: "GET"
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Request failed");
+            return response.json();
+        })
+        .then(data => {
+            console.log("AuditorRejectProcess success:", data);
+        })
+        .catch(err => console.error("Error:", err));
+    }
+
+    // Popup Cancel
+    document.getElementById("popupCancelBtn")?.addEventListener("click", function () {
+        document.getElementById("rejectPopup").style.display = "none";
+    });
+
+    // SI Accept
+    // document.getElementById("btnSIAccept")?.addEventListener("click", function () {
+    //     const txnId = getTransactionId();
+    //     const isManual = getIsManual();
+    //     const bankClassId = getBankClassId();
+    //     window.location.href = `/FastTag/SIAccept?transactionId=${encodeURIComponent(txnId)}&isManual=${encodeURIComponent(isManual)}&bankClassId=${encodeURIComponent(bankClassId)}`;
+    // });
+
+    // SI Reject
+    // document.getElementById("btnSIReject")?.addEventListener("click", function () {
+    //     const txnId = getTransactionId();
+    //     const isManual = getIsManual();
+    //     const bankClassId = getBankClassId();
+    //     window.location.href = `/FastTag/SIReject?transactionId=${encodeURIComponent(txnId)}&isManual=${encodeURIComponent(isManual)}&bankClassId=${encodeURIComponent(bankClassId)}`;
+    // });
+</script> *@
+

@@ -1,0 +1,136 @@
+﻿@model List<CashupDetails>
+
+@{
+    ViewData["Title"] = "Cashup Report";
+}
+<h5 class="mb-4" style="color:blue; text-align:center;">@ViewData["Title"]</h5>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Filter Section -->
+<div class="w-100 mb-2 shadow-sm bg-light border rounded filter-container p-3">
+    <form method="get" asp-controller="CashupReport" asp-action="CashupConsolidatedReport">
+        <div class="row gx-2 gy-1 align-items-end">
+
+            <div class="col-md-3">
+                <label for="operationDay" class="form-label small mb-1">Operation Day</label>
+                <input type="date" id="operationDay" name="operationDay" class="form-control form-control-sm"
+                       value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <div class="col-md-3">
+                <label for="shift" class="form-label small mb-1">Shift</label>
+                <select id="shift" name="shift" class="form-select form-select-sm">
+                    <option value="All" selected>All</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="tcid" class="form-label small mb-1">TCID</label>
+                <input type="text" id="tcid" name="tcid" class="form-control form-control-sm" value="All" />
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-sm btn-primary w-100">View</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- ✅ Grid Section -->
+<div class="table-responsive shadow-sm mt-3" style="max-height: 540px; overflow-y: auto; margin-bottom: 20px;">
+    <table class="table table-bordered table-hover table-striped table-sm small">
+        <thead class="table-dark text-center sticky-top" style="top: 0; z-index: 10;">
+            <tr>
+                <th>UserID</th>
+                <th>StartOfShiftDateTime</th>
+                <th>EndOfShiftDateTime</th>
+                <th>Bagnumber</th>
+                <th>Shiftnnumber</th>
+                <th>CoinOf5Rupees</th>
+                <th>CoinOf2Rupees</th>
+                <th>CoinOf1Rupee</th>
+                <th>NoteOf1Rupee</th>
+                <th>NoteOf2Rupees</th>
+                <th>NoteOf5Rupees</th>
+                <th>NoteOf10Rupees</th>
+                <th>NoteOf20Rupees</th>
+                <th>NoteOf50Rupees</th>
+                <th>NoteOf100Rupees</th>
+                <th>NoteOf200Rupees</th>
+                <th>NoteOf500Rupees</th>
+                <th>NoteOf1000Rupees</th>
+                <th>NoteOf2000Rupees</th>
+                <th>CheckDraftAmount</th>
+                <th>WalletAmount</th>
+                <th>TCashupAmount</th>
+                <th>CashupDeclareAmount</th>
+                <th>FloatAmount</th>
+                <th>BeforValidationtionSystemAmount</th>
+                <th>Shortage</th>
+                <th>Excess</th>
+                <th>AfterValidationSystemAmount</th>
+                <th>ExcessShortage</th>
+                <th>BleedAmount</th>
+                <th>TSystemWIMamount</th>
+                <th>Paytm</th>
+                <th>Wimonle</th>
+                <th>ShiftTypeID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="text-center">
+                        <td>@item.UserID</td>
+                        <td>@item.StartOfShiftDateTime</td>
+                        <td>@item.EndOfShiftDateTime</td>
+                        <td>@item.Bagnumber</td>
+                        <td>@item.Shiftnnumber</td>
+                        <td>@item.CoinOf5Rupees</td>
+                        <td>@item.CoinOf2Rupees</td>
+                        <td>@item.CoinOf1Rupee</td>
+                        <td>@item.NoteOf1Rupee</td>
+                        <td>@item.NoteOf2Rupees</td>
+                        <td>@item.NoteOf5Rupees</td>
+                        <td>@item.NoteOf10Rupees</td>
+                        <td>@item.NoteOf20Rupees</td>
+                        <td>@item.NoteOf50Rupees</td>
+                        <td>@item.NoteOf100Rupees</td>
+                        <td>@item.NoteOf200Rupees</td>
+                        <td>@item.NoteOf500Rupees</td>
+                        <td>@item.NoteOf1000Rupees</td>
+                        <td>@item.NoteOf2000Rupees</td>
+                        <td>@item.CheckDraftAmount</td>
+                        <td>@item.WalletAmount</td>
+                        <td>@item.TCashupAmount</td>
+                        <td>@item.CashupDeclareAmount</td>
+                        <td>@item.FloatAmount</td>
+                        <td>@item.BeforValidationtionSystemAmount</td>
+                        <td>@item.Shortage</td>
+                        <td>@item.Excess</td>
+                        <td>@item.AfterValidationSystemAmount</td>
+                        <td>@item.ExcessShortage</td>
+                        <td>@item.BleedAmount</td>
+                        <td>@item.TSystemWIMamount</td>
+                        <td>@item.Paytm</td>
+                        <td>@item.Wimonle</td>
+                        <td>@item.ShiftTypeID</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="35" class="text-center">No data available for selected filters.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

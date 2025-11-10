@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="~/css/login.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- ✅ Video Background -->
+    <video autoplay muted loop class="video-bg">
+        <source src="~/videos/loginBd.mp4" asp-append-version="true" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- ✅ Login Box -->
+    <div class="login-container">
+        <h1 style="color:cornflowerblue; text-align:center">Welcome to Audit</h1>
+        
+        <form method="post" action="/Home/Login">
+            <h2>Login</h2>
+            @if (ViewBag.Message != null)
+            {
+                <div class="error">@ViewBag.Message</div>
+            }
+            <input type="text" name="username" placeholder="Username" required />
+            <input type="password" name="password" placeholder="Password" required />
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+</body>
+</html>

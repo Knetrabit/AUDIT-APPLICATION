@@ -1,0 +1,450 @@
+﻿@model DeclareCashupModel
+@{
+    ViewData["Title"] = "Cashup Declaration";
+}
+
+<h2 class="text-center text-black text-primary mb-3"
+    style="font-weight:bold; margin-top:15px;
+           background: #fff;
+           padding: 10px 20px;
+           border-radius: 8px;
+           box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+           width:50%;
+           margin-left:25%;">
+    ~ ~ ~ ~ ~ ~ Cashup Declaration ~ ~ ~ ~ ~ ~
+</h2>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="~/style/CashupDeclaration.css" rel="stylesheet" /> 
+
+
+<style>
+    .table-responsive {
+        display: block;
+        max-height: 120px; /* adjust height to fit 2 rows */
+        overflow-y: auto;
+    }
+
+        .table-responsive tbody tr {
+            display: table-row;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+    #cashSection div {
+        width: 115px;
+    }
+</style>
+
+
+
+<div class="container w-50 mt-3 d-flex justify-content-center align-items-center" style="margin-top:40px;">
+
+    <!-- Step 1: Initial Form -->
+    <div id="initialFormDiv" class="w-50 mb-3 shadow-sm border rounded filter-container p-4 d-flex justify-content-center align-items-center"
+         style="background-color: lightgrey; font-size: 1.5rem; margin:20px;">
+        <form id="cashupForm" method="post" asp-controller="CashupDeclaration" asp-action="Index" class="w-75">
+            <div class="mb-3">
+                <label class="form-label">Bag Number</label>
+                <input type="text" class="form-control" name="BagNumber" id="txtBagNumber" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Shift</label>
+                <select class="form-select" name="SelectedShift" id="txtShift" required>
+                    <option value="ALL">-- ALL --</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">User Name</label>
+                <input type="text" class="form-control" name="UserName" id="txtUserName" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Operation Day</label>
+                <input type="date" class="form-control" id="TransactionDate" name="TransactionDate" required>
+            </div>
+
+            <div class="text-end d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn btn-primary px-4">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Step 2: Cashup Declaration UI (Initially Hidden) -->
+    <div id="cashupUI" class="w-75 shadow-sm border rounded p-3" style="display:none; background-color:lightgray; font-size:1.2rem; margin-top:1%;">
+
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <!-- Title -->
+            <h4 style="font-weight:bold;" class="m-0 flex-grow-1 text-center text-decoration-underline">
+                Declare Cashup Amount
+            </h4>
+
+            <!-- Cancel Button (Right End) -->
+            <button type="button" id="btnCancel"
+                    class="btn btn-sm btn-outline-danger ms-3">
+                ✖ Cancel
+            </button>
+        </div>
+        
+
+        <!-- User Details -->
+        <div class="border p-2 mb-3">
+            <h5>User Details:</h5>
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex flex-row">
+                    <label style="margin-right:5px;" for="displayUserName">User Name:</label>
+                    <input style="margin-left:5px; border-radius:5px; border-block:none;" type="text" id="displayUserName">
+                </div>
+
+                <div class="d-flex flex-row">
+                    <label style="margin-right:5px;" for="displayFirstName">First Name:</label>
+                    <input style="margin-left:5px; border-radius:5px; border-block:none;" type="text" id="displayFirstName">
+                </div>
+
+                <div class="d-flex flex-row">
+                    <label style="margin-right:5px;" for="displayLastName">Last Name:</label>
+                    <input style="margin-left:5px; border-radius:5px; border-block:none;"  type="text" id="displayLastName">
+                </div>
+            </div>
+        </div>
+
+
+        <!-- User Shift Details -->
+        <div class="border p-2 mb-3">
+            <h5>User Shift Details:</h5>
+            <div class="table-responsive">
+                <table id="shiftDetailsTable" class="table table-bordered table-sm mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Shift Number</th>
+                            <th>Shift Origin</th>
+                            <th>User Name</th>
+                            <th>Start Of Shift Time</th>
+                            <th>End Of Shift Time</th>
+                            <th>Bag Number</th>
+                            <th>Operation Day</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="7" class="text-center">No data available</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- Count of Coins/Currency -->
+        <div class="border p-2 mb-3">
+            <h5>Count of Currency / Coins:</h5>
+            <div class="row g-2" id="cashSection">
+                <div class="col-md-2"><label>INR 2000</label><input type="number" id="inp2000" class="form-control currency" data-value="2000"></div>
+                <div class="col-md-2"><label>INR 500</label><input type="number" id="inp500" class="form-control currency" data-value="500"></div>
+                <div class="col-md-2"><label>INR 200</label><input type="number" id="inp200" class="form-control currency" data-value="200"></div>
+                <div class="col-md-2"><label>INR 100</label><input type="number" id="inp100" class="form-control currency" data-value="100"></div>
+                <div class="col-md-2"><label>INR 50</label><input type="number" id="inp50"  class="form-control currency" data-value="50"></div>
+                <div class="col-md-2"><label>INR 20</label><input type="number" id="inp20" class="form-control currency" data-value="20"></div>
+                <div class="col-md-2"><label>INR 10</label><input type="number" id="inp10" class="form-control currency" data-value="10"></div>
+                <div class="col-md-2"><label>Coin 5</label><input type="number" id="inp5" class="form-control currency" data-value="5"></div>
+                <div class="col-md-2"><label>Coin 2</label><input type="number" id="inp2" class="form-control currency" data-value="2"></div>
+                <div class="col-md-2"><label>Coin 1</label><input type="number" id="inp1" class="form-control currency" data-value="1"></div>
+            </div>
+            <!-- NEFT / CHEQUE / CARD -->
+            <div class="col-md-4 mt-3">
+                <label style="font-weight:bold;">Payment Mode</label>
+                <select id="paymentMode" class="form-select">
+                    <option value="CASH" selected>Cash</option>
+                    <option value="NEFT">NEFT</option>
+                    <option value="CHEQUE">Cheque</option>
+                    <option value="CARD">Credit/Debit</option>
+                </select>
+                <input type="number" id="paymentAmount" class="form-control mt-2" placeholder="Enter Amount" disabled>
+            </div>
+        </div>
+
+        <!-- Total -->
+        <div class="border p-2 d-flex justify-content-between align-items-center">
+            <strong>Total Declared Amount Rs: <span id="totalAmount">0</span></strong>
+            <button type="button" id="btnConfirm" class="btn btn-success">Confirm Declaration</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let today = new Date();
+        let yyyy = today.getFullYear();
+        let mm = String(today.getMonth() + 1).padStart(2, '0');
+        let dd = String(today.getDate()).padStart(2, '0');
+
+        // Correct format for <input type="date">
+        document.getElementById("TransactionDate").value = `${yyyy}-${mm}-${dd}`;
+
+        // Display DD-MM-YYYY separately if you want
+        if (document.getElementById("displayDate")) {
+           document.getElementById("displayDate").innerText = `${dd}-${mm}-${yyyy}`;
+        }
+
+
+        // Handle form submit
+        $("#cashupForm").on("submit", function (e) {
+            e.preventDefault();
+               $.post("/CashupDeclaration/Index", $(this).serialize())
+                .done(function (data) {
+                    if (data.success) {
+                         // Get username from form input
+                        let userName = $("#txtUserName").val();
+
+                        // Update User Details div (set input values)
+                        $("#displayUserName").val(userName);
+                        // $("#displayFirstName").val("Not Available");
+                        // $("#displayLastName").val("Not Available");
+                        GetPersonDetails(userName);
+
+                        $("#initialFormDiv").hide();
+                        $("#cashupUI").show();
+
+                        loadShiftDetails();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .fail(function () {
+                    alert("Something went wrong while submitting. Please try again.");
+                });
+                
+        });
+    });
+
+    function GetPersonDetails(userName){
+        // let userName = $("#txtUserName").val();
+        if (!userName) return;
+        $.ajax({
+            url: `/CashupDeclaration/GetPersonDetails?userId=${encodeURIComponent(userName)}`,
+            method: "GET",
+            success: function (data) {
+                if (data) {
+                    $("#displayFirstName").val(data.firstName || "N/A");
+                    $("#displayLastName").val(data.lastName || "N/A");
+                } else {
+                    $("#displayFirstName").val("N/A");
+                    $("#displayLastName").val("N/A");
+                }
+            },
+            error: function () {
+                $("#displayFirstName").val("Error");
+                $("#displayLastName").val("Error");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $("#btnConfirm").on("click", function () {
+            // Show confirmation popup
+            if (confirm("Are you sure you want to confirm this Cashup Declaration?")) {
+
+                let cashData = {
+                    INR2000: parseInt($("#inp2000").val()) || 0,
+                    INR500:  parseInt($("#inp500").val()) || 0,
+                    INR200:  parseInt($("#inp200").val()) || 0,
+                    INR100:  parseInt($("#inp100").val()) || 0,
+                    INR50:   parseInt($("#inp50").val()) || 0,
+                    INR20:   parseInt($("#inp20").val()) || 0,
+                    INR10:   parseInt($("#inp10").val()) || 0,
+                    Coin5:   parseInt($("#inp5").val()) || 0,
+                    Coin2:   parseInt($("#inp2").val()) || 0,
+                    Coin1:   parseInt($("#inp1").val()) || 0
+                };
+
+                let paymentMode = $("#paymentMode").val();
+                let paymentAmount = 0;
+                if (paymentMode !== "CASH") {
+                    paymentAmount = parseInt($("#paymentAmount").val()) || 0;
+                    if (paymentAmount <= 0) {
+                        alert("Please enter a valid amount for " + paymentMode);
+                        return;
+                    }
+                }else{
+                    // Check if all denominations are 0
+                    let totalCash = Object.values(cashData).reduce((sum, val) => sum + val, 0);
+                    if (totalCash === 0) {
+                        alert("Please enter at least one cash denomination.");
+                        return;
+                    }
+                }
+
+                // ✅ If OK, run AJAX
+                let params = {
+                    userName: $("#txtUserName").val(),
+                    bagNumber: $("#txtBagNumber").val(),
+                    shift: $("#txtShift").val(),
+                    operationDay: $("#TransactionDate").val(),
+                    cash: cashData,  // include CashDenomination object here
+                    NEFT_CHEQUE_CARD_Amount: paymentAmount,
+                };
+               
+                $.ajax({
+                    url: "/CashupDeclaration/SaveCashupDeclaration",
+                    type: "POST",
+                    contentType: 'application/json',
+                    data: JSON.stringify(params),
+                    success: function (data) {
+                        if (data.success) {
+                            alert("Cash Up Declaration Saved Successfully");
+
+                            // Go back to initial form
+                            $("#cashupUI").hide();
+                            $("#initialFormDiv").show();
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 300);
+                        } else {
+                            alert("Save failed. ResultCode: " + data.resultCode);
+                        }
+                    },
+                    error: function (xhr) {
+                        alert("Error: " + xhr.responseText);
+                    }
+                });
+
+            } else {
+                // ❌ If Cancel → Stay on the same div (do nothing)
+                return;
+            }
+        });
+    });
+
+    $(document).ready(function () {
+    // Cancel button click
+        $("#btnCancel").on("click", function () {
+            // Go back to initial form
+            $("#cashupUI").hide();
+            $("#initialFormDiv").show();
+
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+
+        });
+    });
+
+
+    $(document).ready(function () {
+
+        function calculateTotal() {
+            let total = 0;
+            $(".currency").each(function () {
+                let count = parseInt($(this).val()) || 0;
+                let value = parseInt($(this).data("value"));
+                total += count * value;
+            });
+            $("#totalAmount").text(total.toLocaleString('en-IN'));
+        }
+
+        // Recalculate on input
+        $(".currency").on("input", function () {
+            if ($("#paymentMode").val() === "CASH") {
+                calculateTotal();
+            }
+        });
+
+        // Handle payment mode change
+        $("#paymentMode").on("change", function () {
+            let mode = $(this).val();
+
+            if (mode === "CASH") {
+                $("#cashSection").show(); // show cash/coin inputs
+                $(".currency").prop("disabled", false).val(""); // clear old values
+                $("#paymentAmount").prop("disabled", true).val(""); // disable NEFT/CHEQUE
+                calculateTotal();
+
+            } else {
+                // Hide and clear cash/coin inputs
+                $("#cashSection").hide();
+                $(".currency").val("");
+
+                // Enable NEFT/CHEQUE input
+                $("#paymentAmount").prop("disabled", false).val("");
+
+                // Total becomes 0 until user enters amount
+                $("#totalAmount").text("0");
+            }
+        });
+
+        // For NEFT / Cheque amount
+        $("#paymentAmount").on("input", function () {
+            if ($("#paymentMode").val() !== "CASH") {
+                let amt = parseInt($(this).val()) || 0;
+                $("#totalAmount").text(amt.toLocaleString('en-IN'));
+            }
+        });
+
+    });
+
+</script>
+   
+<script>
+        function loadShiftDetails() {
+        let userName = $("#txtUserName").val();
+        let bagNumber = $("#txtBagNumber").val();
+
+        if (!userName || !bagNumber) {
+            alert("Please enter both Username and Bag Number.");
+            return;
+        }
+
+        $.ajax({
+            url: `/CashupDeclaration/GetShifts?user=${encodeURIComponent(userName)}&bagNumber=${encodeURIComponent(bagNumber)}`,
+            method: "GET",
+            success: function (data) {
+                let tbody = "";
+
+                if (!data || data.length === 0) {
+                    tbody = `<tr><td colspan="7" class="text-center">No shift details found.</td></tr>`;
+                } else {
+                    data.forEach(shift => {
+                        tbody += `
+                            <tr>
+                                <td>${shift.shiftNumber}</td>
+                                <td>${shift.shiftOrigin}</td>
+                                <td>${shift.userName}</td>
+                                <td>${formatDate(shift.startOfShiftTime)}</td>
+                                <td>${formatDate(shift.endOfShiftTime)}</td>
+                                <td>${shift.bagNumber}</td>
+                                <td>${formatDate(shift.operationDay)}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                $("#shiftDetailsTable tbody").html(tbody);
+            },
+            error: function () {
+                $("#shiftDetailsTable tbody").html("<tr><td colspan='7' class='text-danger text-center'>Failed to load shift details.</td></tr>");
+            }
+        });
+    }
+
+    // Optional: format Date nicely
+    function formatDate(dateStr) {
+        if (!dateStr) return "-";
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return "-";
+        return date.toLocaleString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+    }
+
+</script>
