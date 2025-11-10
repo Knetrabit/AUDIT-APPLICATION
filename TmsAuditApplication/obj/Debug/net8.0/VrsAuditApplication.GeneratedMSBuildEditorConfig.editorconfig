@@ -1,0 +1,81 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = VrsAuditApplication
+build_property.RootNamespace = VrsAuditApplication
+build_property.ProjectDir = D:\Other Local Projects\For Loni Plaza\VrsAuditApplication\TmsAuditApplication\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\Other Local Projects\For Loni Plaza\VrsAuditApplication\TmsAuditApplication
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/CashupDeclaration/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzaHVwRGVjbGFyYXRpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/CashupReport/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FzaHVwUmVwb3J0XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/FastTag/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmFzdFRhZ1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/FloatDeclaration/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmxvYXREZWNsYXJhdGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/FloatDeclaration/_FloatDetailsTable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmxvYXREZWNsYXJhdGlvblxfRmxvYXREZXRhaWxzVGFibGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/NonFastTag/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm9uRmFzdFRhZ1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/PendingCashup/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVuZGluZ0Nhc2h1cFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/UserCreation/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlckNyZWF0aW9uXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/UserRights/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclJpZ2h0c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Other Local Projects/For Loni Plaza/VrsAuditApplication/TmsAuditApplication/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-1w8svv3g6f
