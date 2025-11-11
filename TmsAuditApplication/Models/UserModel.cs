@@ -11,14 +11,15 @@
         public string Email { get; set; }
         public string Gender { get; set; } // Male or Female
         public string ContactNumber { get; set; }
-        public string DocumentType { get; set; } // Passport, Driver's License, Aadhar Card, etc.
+        public string DocumentType { get; set; } // Passport, Driver's License, Aadhar Card, etc. - IDType
         public string DocumentNumber { get; set; } // Unique identifier for the document
-        public string JobPosition { get; set; } // TC Collector, Driver, Manager, etc.
+        public string JobPosition { get; set; } // TC Collector, Driver, Manager, etc. - JobPositionID
         public string BlacklistStatus { get; set; } // Yes or No
         public string PdfDocument { get; set; } // Base64 encoded PDF document
 
         // Address Details
 
+        public int CityCode { get; set; }
         public string City { get; set; }
         public string PinCode { get; set; }
         public string AddressLine1 { get; set; }

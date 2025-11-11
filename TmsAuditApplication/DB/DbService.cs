@@ -1659,6 +1659,140 @@ public class DbService
         return result;
     }
 
+
+    /// <summary>
+    ///  ============== Admin Module Methods ==============
+    /// </summary>
+    /// <returns></returns>
+    /// 
+
+    public List<CityListModel> GetCities()
+    {
+        List<CityListModel> cityList = new List<CityListModel>();
+
+        using (SqlConnection conn = new SqlConnection(_connectionString))
+        using (SqlCommand cmd = new SqlCommand("[Admin_SP].[Admin_GetCities]", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            conn.Open();
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    cityList.Add(new CityListModel
+                    {
+                        CityCode = Convert.ToInt32(reader["CityCode"]),
+                        CityName = reader["City Name"].ToString(),
+                        ZipCode = reader["ZipCode"].ToString()
+                    });
+                }
+            }
+        }
+
+        return cityList;
+    }
+
+    // ==== Save User Creation ====
+
+    public int UpdatePersonAddress(UserModel userModel)
+    {
+        int result = 0;
+        try
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("[TMS_SM].[Admin_SP].[Admin_UpdatePersonAddress]", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@plazaId", 1);
+                    cmd.Parameters.AddWithValue("@AddressID", 0);
+                    cmd.Parameters.AddWithValue("@CityCode", userModel.CityCode);
+                    cmd.Parameters.AddWithValue("@StreetNumber", userModel.AddressLine1);
+                    cmd.Parameters.AddWithValue("@Floor", userModel.Floor);
+                    cmd.Parameters.AddWithValue("@Apartment", userModel.HouseApartmentNo);
+                    cmd.Parameters.AddWithValue("@StreetName", userModel.AddressLine2);
+                    cmd.Parameters.AddWithValue("@StreetName2", userModel.AddressLine3);
+                    cmd.Parameters.AddWithValue("@ZIPCode", userModel.PinCode);
+                    cmd.Parameters.AddWithValue("@Mode", "Add");
+                    cmd.Parameters.AddWithValue("@AddID", 0);
+
+                    conn.Open();
+
+                    object resultObj = cmd.ExecuteScalar();
+                    result = Convert.ToInt32(resultObj);
+
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            // Log exception
+            // LogException.ExceptionLog(ex.Source, ex.Message, ex.StackTrace); 
+        }
+        return result;
+    }
+
+    public bool UpdatePerson(UserModel userModel)
+    {
+
+        bool result = false;
+        try
+        {
+            // create address
+            int address = UpdatePersonAddress(userModel);
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("[TMS_SM].[Admin_SP].[Admin_UpdatePerson]", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@PersonID", 0);
+                    cmd.Parameters.AddWithValue("@JobPosition", userModel.CityCode);
+                    cmd.Parameters.AddWithValue("@Salutation", userModel.AddressLine1);
+                    cmd.Parameters.AddWithValue("@LastName", userModel.Floor);
+                    cmd.Parameters.AddWithValue("@FirstName", userModel.HouseApartmentNo);
+                    cmd.Parameters.AddWithValue("@IDType", userModel.AddressLine2);
+                    cmd.Parameters.AddWithValue("@DocumentNumber", userModel.AddressLine3);
+                    cmd.Parameters.AddWithValue("@Sex", userModel.PinCode);
+                    cmd.Parameters.AddWithValue("@BirthPlace", "Add");
+                    cmd.Parameters.AddWithValue("@BirthDate", 0);
+                    cmd.Parameters.AddWithValue("@Phone", 0);
+                    cmd.Parameters.AddWithValue("@Email", 0);
+                    cmd.Parameters.AddWithValue("@AddressID", address);
+                    cmd.Parameters.AddWithValue("@Mode", 0);
+                    cmd.Parameters.AddWithValue("@plazaId", 1);
+                    cmd.Parameters.AddWithValue("@OldJobID", 0);
+                    cmd.Parameters.AddWithValue("@UserID", 0);
+
+                    conn.Open();
+
+                    // ExecuteNonQuery for update/insert/delete
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    // Optionally check if rows were affected
+                    if (rowsAffected > 0)
+                    {
+                        result = true;
+                        // Success
+                    }
+
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            // Log exception
+            // LogException.ExceptionLog(ex.Source, ex.Message, ex.StackTrace); 
+        }
+        return result;
+    }
+
+
     public List<JobPosition> GetJobPositions()
     {
         return new List<JobPosition>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Other Local Projects\\For Loni Plaza\\VrsAuditApplication\\TmsAuditApplication\\VrsAuditApplication.csproj": {}
+    "D:\\Other Local Projects\\Audit\\AUDIT-APPLICATION\\TmsAuditApplication\\VrsAuditApplication.csproj": {}
   },
   "projects": {
-    "D:\\Other Local Projects\\For Loni Plaza\\VrsAuditApplication\\TmsAuditApplication\\VrsAuditApplication.csproj": {
+    "D:\\Other Local Projects\\Audit\\AUDIT-APPLICATION\\TmsAuditApplication\\VrsAuditApplication.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Other Local Projects\\For Loni Plaza\\VrsAuditApplication\\TmsAuditApplication\\VrsAuditApplication.csproj",
+        "projectUniqueName": "D:\\Other Local Projects\\Audit\\AUDIT-APPLICATION\\TmsAuditApplication\\VrsAuditApplication.csproj",
         "projectName": "VrsAuditApplication",
-        "projectPath": "D:\\Other Local Projects\\For Loni Plaza\\VrsAuditApplication\\TmsAuditApplication\\VrsAuditApplication.csproj",
+        "projectPath": "D:\\Other Local Projects\\Audit\\AUDIT-APPLICATION\\TmsAuditApplication\\VrsAuditApplication.csproj",
         "packagesPath": "C:\\Users\\ketan\\.nuget\\packages\\",
-        "outputPath": "D:\\Other Local Projects\\For Loni Plaza\\VrsAuditApplication\\TmsAuditApplication\\obj\\",
+        "outputPath": "D:\\Other Local Projects\\Audit\\AUDIT-APPLICATION\\TmsAuditApplication\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

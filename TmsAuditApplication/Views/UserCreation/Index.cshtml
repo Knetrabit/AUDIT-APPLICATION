@@ -101,11 +101,23 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label small">City</label>
-                <input type="text" name="City" class="form-control form-control-sm" />
+                <select id="City" name="City" class="form-select form-select-sm">
+                    <option value="">--Select City--</option>
+                    @foreach (var city in ViewBag.CityList)
+                    {
+                        <option value="@city.CityCode">@city.CityName</option>
+                    }
+                </select>
             </div>
             <div class="col-md-6">
                 <label class="form-label small">Pin Code</label>
-                <input type="text" name="PinCode" class="form-control form-control-sm" />
+                <select id="PinCode" name="PinCode" class="form-select form-select-sm">
+                    <option value="">--Select Pin Code--</option>
+                    @foreach (var city in ViewBag.CityList)
+                    {
+                        <option value="@city.ZipCode">@city.ZipCode</option>
+                    }
+                </select>
             </div>
             <div class="col-md-12">
                 <label class="form-label small">Address Line 1</label>
@@ -137,6 +149,21 @@
 
     <div id="SuccessAndErrorMessage" class="mt-4 text-center"></div>
 </div>
+
+
+<script>
+    $("#City").change(function () {
+        $.getJSON('/UserCreation/GetZipByCity?cityCode=' + $(this).val(), function (zip) {
+            $("#PinCode").val(zip);
+        });
+    });
+
+    $("#PinCode").change(function () {
+        $.getJSON('/UserCreation/GetCityByZip?zip=' + $(this).val(), function (city) {
+            if (city) $("#City").val(city.cityCode);
+        });
+    });
+</script>
 
 <script>
     function previewPDF() {

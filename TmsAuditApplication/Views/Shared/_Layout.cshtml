@@ -75,9 +75,36 @@
     <!-- Sidebar for Admin -->
     <div id="adminSidebar" class="sidebar colorful-sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeSidebar('adminSidebar')">&times;</a>
-        <a asp-controller="UserCreation" asp-action="Index"><i class="bi bi-person-plus-fill"></i> User Creation</a>
-        <a asp-controller="UserRights" asp-action="Index"><i class="bi bi-shield-lock-fill"></i> User Rights</a>
+
+        <a asp-controller="UserCreation" asp-action="Index">
+            <i class="bi bi-person-plus-fill"></i> User Creation
+        </a>
+
+        <a asp-controller="UserRights" asp-action="Index">
+            <i class="bi bi-key-fill"></i> User Rights
+        </a>
+
+        <a asp-controller="MasterFare" asp-action="Index">
+            <i class="bi bi-cash-stack"></i> Master Fare
+        </a>
+
+        <a asp-controller="VehicleMaster" asp-action="Index">
+            <i class="bi bi-truck-front-fill"></i> Vehicle Master
+        </a>
+
+        <a asp-controller="LaneMaster" asp-action="Index">
+            <i class="bi bi-layers-fill"></i> Lane Master
+        </a>
+
+        <a asp-controller="EventLogReport" asp-action="Index">
+            <i class="bi bi-journal-text"></i> Event Log Report
+        </a>
+
+        <a asp-controller="ChangePassword" asp-action="Index">
+            <i class="bi bi-shield-lock-fill"></i> Change Password
+        </a>
     </div>
+
     
 
     <!-- Main Content -->

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VrsAuditApplication")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+247b8384258c2bb2cf3ec317994ce03d03d00452")]
 [assembly: System.Reflection.AssemblyProductAttribute("VrsAuditApplication")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VrsAuditApplication")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
